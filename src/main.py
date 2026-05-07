@@ -3,22 +3,19 @@ from pygame.locals import *
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
-
+from renderer import draw_grid
+from maze import Maze
 
 WIDTH = 800
 HEIGHT = 800
 
-
-def initialize():
-
+def initialize(): 
     glClearColor(0.0, 0.0, 0.0, 1.0)
-
     glMatrixMode(GL_PROJECTION)
-
     glLoadIdentity()
-
     gluOrtho2D(0, WIDTH, HEIGHT, 0)
 
+maze = Maze()
 
 def main():
 
@@ -29,9 +26,7 @@ def main():
         DOUBLEBUF | OPENGL
     )
 
-    pygame.display.set_caption(
-        "Maze Generator and Solver"
-    )
+    pygame.display.set_caption("Maze Generator and Solver")
 
     initialize()
 
@@ -40,11 +35,14 @@ def main():
     while running:
 
         for event in pygame.event.get():
-
             if event.type == QUIT:
                 running = False
 
+        maze.step()  # 🔥 IMPORTANT: animation happens here
+
         glClear(GL_COLOR_BUFFER_BIT)
+
+        draw_grid(maze)
 
         pygame.display.flip()
 
