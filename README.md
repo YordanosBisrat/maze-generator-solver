@@ -144,8 +144,8 @@ python src/main.py
 
 | Key | Action |
 |-----|--------|
-| R | Reset maze (planned) |
-| SPACE | Pause / Resume (planned) |
+| R | Reset maze  |
+| SPACE | Pause / Resume  |
 
 ---
 
