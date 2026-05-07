@@ -23,6 +23,6 @@ Backtracking depth-first search.
 - Python
 - PyOpenGL
 - Pygame
-# northWall and eastWall are represented inside each Cell object:
-# north -> northWall
-# east  -> eastWall
+## northWall and eastWall are represented inside each Cell object:
+## north -> northWall
+## east  -> eastWall
