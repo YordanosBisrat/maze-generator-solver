@@ -15,6 +15,11 @@ class Maze:
 
         self.grid[0][0].visited = True
         self.stack.append((0, 0))
+        self.solver_stack = [(0, 0)]
+        self.solver_visited = set()
+        self.solver_visited.add((0, 0))
+        self.solution_path = []
+        self.solved = False
 
     def get_neighbors(self, r, c):
         neighbors = []
@@ -74,3 +79,48 @@ class Maze:
             if len(self.stack) > 1:
                 self.stack.pop()
                 self.current = self.stack[-1]
+    def solver_step(self):
+
+        if self.solved:
+            return
+
+        r, c = self.solver_stack[-1]
+
+        # reached goal
+        if (r, c) == (ROWS - 1, COLS - 1):
+            self.solution_path = list(self.solver_stack)
+            self.solved = True
+            return
+
+        neighbors = []
+
+        cell = self.grid[r][c]
+
+        # UP
+        if not cell.north and r > 0:
+            neighbors.append((r - 1, c))
+
+        # DOWN
+        if not cell.south and r < ROWS - 1:
+            neighbors.append((r + 1, c))
+
+        # LEFT
+        if not cell.west and c > 0:
+            neighbors.append((r, c - 1))
+
+        # RIGHT
+        if not cell.east and c < COLS - 1:
+            neighbors.append((r, c + 1))
+
+        moved = False
+
+        for nr, nc in neighbors:
+            if (nr, nc) not in self.solver_visited:
+                self.solver_stack.append((nr, nc))
+                self.solver_visited.add((nr, nc))
+                moved = True
+                break
+
+        if not moved and len(self.solver_stack) > 1:
+            # dead end → backtrack
+            self.solver_stack.pop()            

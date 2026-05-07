@@ -3,19 +3,27 @@ from pygame.locals import *
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
+
 from renderer import draw_grid
 from maze import Maze
 
 WIDTH = 800
 HEIGHT = 800
 
-def initialize(): 
+
+def initialize():
+
     glClearColor(0.0, 0.0, 0.0, 1.0)
+
     glMatrixMode(GL_PROJECTION)
+
     glLoadIdentity()
+
     gluOrtho2D(0, WIDTH, HEIGHT, 0)
 
+
 maze = Maze()
+
 
 def main():
 
@@ -38,7 +46,9 @@ def main():
             if event.type == QUIT:
                 running = False
 
-        maze.step()  # 🔥 IMPORTANT: animation happens here
+        # 🔥 STEP EXECUTION
+        maze.step()         # generate maze
+        maze.solver_step()  # solve maze
 
         glClear(GL_COLOR_BUFFER_BIT)
 
