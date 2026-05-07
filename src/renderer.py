@@ -93,3 +93,34 @@ def draw_grid(maze):
     glVertex2f(x + 10, y + 30)
 
     glEnd()
+    # =====================
+    # START (GREEN)
+    # =====================
+    sr, sc = maze.start
+    x = sc * CELL_SIZE
+    y = sr * CELL_SIZE
+
+    glColor3f(0, 1, 0)
+
+    glBegin(GL_QUADS)
+    glVertex2f(x, y)
+    glVertex2f(x + CELL_SIZE, y)
+    glVertex2f(x + CELL_SIZE, y + CELL_SIZE)
+    glVertex2f(x, y + CELL_SIZE)
+    glEnd()
+
+    # =====================
+    # END (PURPLE)
+    # =====================
+    er, ec = maze.end
+    x = ec * CELL_SIZE
+    y = er * CELL_SIZE
+
+    glColor3f(1, 0, 1)
+
+    glBegin(GL_QUADS)
+    glVertex2f(x, y)
+    glVertex2f(x + CELL_SIZE, y)
+    glVertex2f(x + CELL_SIZE, y + CELL_SIZE)
+    glVertex2f(x, y + CELL_SIZE)
+    glEnd()

@@ -8,16 +8,25 @@ CELL_SIZE = 40
 
 class Maze:
     def __init__(self):
+        # grid
         self.grid = [[Cell() for _ in range(COLS)] for _ in range(ROWS)]
 
+        # generator state (DFS maze builder)
         self.stack = []
         self.current = (0, 0)
 
         self.grid[0][0].visited = True
         self.stack.append((0, 0))
-        self.solver_stack = [(0, 0)]
+        
+        # start & end (REQUIRED BY SPEC)
+        self.start = (random.randint(0, ROWS - 1), 0)
+        self.end = (random.randint(0, ROWS - 1), COLS - 1)
+
+        # solver state
+        self.solver_stack = [self.start]
         self.solver_visited = set()
-        self.solver_visited.add((0, 0))
+        self.solver_visited.add(self.start)
+
         self.solution_path = []
         self.solved = False
 

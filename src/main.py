@@ -46,7 +46,7 @@ def main():
             if event.type == QUIT:
                 running = False
 
-        # 🔥 STEP EXECUTION
+        #  STEP EXECUTION
         maze.step()         # generate maze
         maze.solver_step()  # solve maze
 
