@@ -1,126 +1,262 @@
-from OpenGL.GL import *
+import pygame
 
-from maze import CELL_SIZE, ROWS, COLS
+from maze import ROWS, COLS, CELL_SIZE
+
+WHITE = (245, 245, 245)
+BLACK = (20, 20, 20)
+
+YELLOW = (255, 215, 0)
+ORANGE = (255, 165, 0)
+BLUE = (100, 149, 237)
+RED = (220, 70, 70)
+GREEN = (60, 180, 75)
+
+DARK = (40, 44, 52)
+
+BUTTON = (60, 70, 90)
+
+SLIDER = (120, 120, 120)
 
 
-def draw_grid(maze):
+def draw(screen, maze, top_offset, speed):
 
-    glColor3f(1, 1, 1)
+    screen.fill(WHITE)
 
-    glBegin(GL_LINES)
+    # =========================
+    # TOP PANEL
+    # =========================
+
+    pygame.draw.rect(
+        screen,
+        DARK,
+        (0, 0, 1000, top_offset)
+    )
+
+    title_font = pygame.font.SysFont(
+        "Arial",
+        28,
+        bold=True
+    )
+
+    title = title_font.render(
+        "DFS Maze Generator and Solver",
+        True,
+        WHITE
+    )
+
+    screen.blit(title, (30, 20))
+
+    # =========================
+    # BUTTONS
+    # =========================
+
+    pygame.draw.rect(
+        screen,
+        BUTTON,
+        (40, 65, 190, 50),
+        border_radius=12
+    )
+
+    pygame.draw.rect(
+        screen,
+        BUTTON,
+        (260, 65, 220, 50),
+        border_radius=12
+    )
+
+    button_font = pygame.font.SysFont(
+        "Arial",
+        22
+    )
+
+    txt1 = button_font.render(
+        "R  NEW MAZE",
+        True,
+        WHITE
+    )
+
+    txt2 = button_font.render(
+        "SPACE  PAUSE",
+        True,
+        WHITE
+    )
+
+    screen.blit(txt1, (65, 78))
+    screen.blit(txt2, (285, 78))
+
+    # =========================
+    # SPEED UI
+    # =========================
+
+    speed_text = button_font.render(
+        f"SPEED: {speed}",
+        True,
+        WHITE
+    )
+
+    screen.blit(speed_text, (560, 75))
+
+    pygame.draw.rect(
+        screen,
+        SLIDER,
+        (720, 85, 180, 5),
+        border_radius=10
+    )
+
+    slider_x = 720 + (speed * 1.5)
+
+    pygame.draw.circle(
+        screen,
+        WHITE,
+        (int(slider_x), 87),
+        10
+    )
+
+    # =========================
+    # LEGEND
+    # =========================
+
+    legend_items = [
+        ("Current Mouse", YELLOW),
+        ("Explored Path", ORANGE),
+        ("Dead End", BLUE),
+        ("Solution Path", RED),
+        ("Start / Goal", GREEN),
+    ]
+
+    lx = 50
+    ly = 145
+
+    small_font = pygame.font.SysFont(
+        "Arial",
+        17
+    )
+
+    for text, color in legend_items:
+
+        pygame.draw.circle(
+            screen,
+            color,
+            (lx, ly),
+            8
+        )
+
+        label = small_font.render(
+            text,
+            True,
+            WHITE
+        )
+
+        screen.blit(label, (lx + 15, ly - 8))
+
+        lx += 180
+
+    # =========================
+    # DRAW CELLS
+    # =========================
+
+    for r in range(ROWS):
+        for c in range(COLS):
+
+            x = c * CELL_SIZE + 60
+            y = r * CELL_SIZE + top_offset + 40
+
+            rect = pygame.Rect(
+                x,
+                y,
+                CELL_SIZE,
+                CELL_SIZE
+            )
+
+            pygame.draw.rect(screen, WHITE, rect)
+
+            # explored path
+
+            if (r, c) in maze.solver_visited:
+                pygame.draw.rect(screen, ORANGE, rect)
+
+            # dead ends
+
+            if (r, c) in maze.dead_ends:
+                pygame.draw.rect(screen, BLUE, rect)
+
+            # final solution
+
+            if (r, c) in maze.solution_path:
+                pygame.draw.rect(screen, RED, rect)
+
+            # start / goal
+
+            if (r, c) == maze.start:
+                pygame.draw.rect(screen, GREEN, rect)
+
+            if (r, c) == maze.end:
+                pygame.draw.rect(screen, GREEN, rect)
+
+            # current solver mouse
+
+            if maze.solver_stack and not maze.solved:
+
+                if (r, c) == maze.solver_stack[-1]:
+
+                    pygame.draw.circle(
+                        screen,
+                        YELLOW,
+                        (
+                            x + CELL_SIZE // 2,
+                            y + CELL_SIZE // 2
+                        ),
+                        CELL_SIZE // 4
+                    )
+
+    # =========================
+    # DRAW WALLS
+    # =========================
 
     for r in range(ROWS):
         for c in range(COLS):
 
             cell = maze.grid[r][c]
 
-            x = c * CELL_SIZE
-            y = r * CELL_SIZE
+            x = c * CELL_SIZE + 60
+            y = r * CELL_SIZE + top_offset + 40
 
-            # top
             if cell.north:
-                glVertex2f(x, y)
-                glVertex2f(x + CELL_SIZE, y)
 
-            # left
+                pygame.draw.line(
+                    screen,
+                    BLACK,
+                    (x, y),
+                    (x + CELL_SIZE, y),
+                    2
+                )
+
+            if cell.south:
+
+                pygame.draw.line(
+                    screen,
+                    BLACK,
+                    (x, y + CELL_SIZE),
+                    (x + CELL_SIZE, y + CELL_SIZE),
+                    2
+                )
+
             if cell.west:
-                glVertex2f(x, y)
-                glVertex2f(x, y + CELL_SIZE)
 
-    glEnd()
+                pygame.draw.line(
+                    screen,
+                    BLACK,
+                    (x, y),
+                    (x, y + CELL_SIZE),
+                    2
+                )
 
-    # =========================
-    # 2. BLUE DEAD ENDS
-    # =========================
+            if cell.east:
 
-    glColor3f(0, 0, 1)
-
-    glBegin(GL_QUADS)
-
-    for r in range(ROWS):
-        for c in range(COLS):
-
-            if (r, c) in maze.solver_visited and (r, c) not in maze.solver_stack:
-
-                x = c * CELL_SIZE
-                y = r * CELL_SIZE
-
-                glVertex2f(x, y)
-                glVertex2f(x + CELL_SIZE, y)
-                glVertex2f(x + CELL_SIZE, y + CELL_SIZE)
-                glVertex2f(x, y + CELL_SIZE)
-
-    glEnd()
-
-    # =========================
-    # 3. FINAL PATH (YELLOW)
-    # =========================
-
-    if maze.solved:
-
-        glColor3f(1, 1, 0)
-
-        glBegin(GL_QUADS)
-
-        for r, c in maze.solution_path:
-
-            x = c * CELL_SIZE
-            y = r * CELL_SIZE
-
-            glVertex2f(x, y)
-            glVertex2f(x + CELL_SIZE, y)
-            glVertex2f(x + CELL_SIZE, y + CELL_SIZE)
-            glVertex2f(x, y + CELL_SIZE)
-
-        glEnd()
-
-    # =========================
-    # 4. RED CURRENT POSITION
-    # =========================
-
-    r, c = maze.solver_stack[-1]
-
-    x = c * CELL_SIZE
-    y = r * CELL_SIZE
-
-    glColor3f(1, 0, 0)
-
-    glBegin(GL_QUADS)
-
-    glVertex2f(x + 10, y + 10)
-    glVertex2f(x + 30, y + 10)
-    glVertex2f(x + 30, y + 30)
-    glVertex2f(x + 10, y + 30)
-
-    glEnd()
-    # =====================
-    # START (GREEN)
-    # =====================
-    sr, sc = maze.start
-    x = sc * CELL_SIZE
-    y = sr * CELL_SIZE
-
-    glColor3f(0, 1, 0)
-
-    glBegin(GL_QUADS)
-    glVertex2f(x, y)
-    glVertex2f(x + CELL_SIZE, y)
-    glVertex2f(x + CELL_SIZE, y + CELL_SIZE)
-    glVertex2f(x, y + CELL_SIZE)
-    glEnd()
-
-    # =====================
-    # END (PURPLE)
-    # =====================
-    er, ec = maze.end
-    x = ec * CELL_SIZE
-    y = er * CELL_SIZE
-
-    glColor3f(1, 0, 1)
-
-    glBegin(GL_QUADS)
-    glVertex2f(x, y)
-    glVertex2f(x + CELL_SIZE, y)
-    glVertex2f(x + CELL_SIZE, y + CELL_SIZE)
-    glVertex2f(x, y + CELL_SIZE)
-    glEnd()
+                pygame.draw.line(
+                    screen,
+                    BLACK,
+                    (x + CELL_SIZE, y),
+                    (x + CELL_SIZE, y + CELL_SIZE),
+                    2
+                )
