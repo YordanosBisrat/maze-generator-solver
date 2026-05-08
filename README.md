@@ -1,7 +1,7 @@
 # Maze Generator and Solver
 
 This project generates and solves rectangular mazes using stack-based depth-first search (DFS) and backtracking algorithms.
-The maze is visualized dynamically using OpenGL, where an invisible “mouse” carves paths through walls to create a proper maze structure. A second solving algorithm then traverses the maze while visualizing explored paths, dead ends, and the final solution.
+The maze is visualized dynamically using Pygame, where an invisible “mouse” carves paths through walls to create a proper maze structure. A second solving algorithm then traverses the maze while visualizing explored paths, dead ends, and the final solution.
 
 ---
 
@@ -15,6 +15,10 @@ The maze is visualized dynamically using OpenGL, where an invisible “mouse” 
 - Dead-end visualization
 - Final solution path visualization
 - Randomized traversal behavior
+- Interactive controls
+- Adjustable animation speed
+- Random cycle generation (bonus feature)
+
 
 ---
 
@@ -66,9 +70,13 @@ The maze solver uses another DFS traversal algorithm.
 
 ### Visualization
 
-- 🔴 Red Cell → current mouse position
+- 🟡 Yellow Cell → current mouse position
+- 🟠 Orange Cell → explored path
 - 🔵 Blue Cell → dead end / backtracked path
-- 🟡 Yellow Cell → final successful path
+- 🔴 Red Cell → final successful path
+- 🟢 Green Cell → start and goal cells
+
+
 
 The solver explores paths dynamically and backtracks whenever a dead end is reached.
 
@@ -77,7 +85,6 @@ The solver explores paths dynamically and backtracks whenever a dead end is reac
 ## Technologies
 
 - Python
-- PyOpenGL
 - Pygame
 
 ---
@@ -155,7 +162,9 @@ python src/main.py
 - Pause / Play controls
 - Speed control
 - Instant maze regeneration
-- Additional visualization improvements
+- Cleaner visualization improvements
+- Interactive UI panel
+- Dynamic solver animation
 
 ---
 
@@ -166,7 +175,7 @@ python src/main.py
 - Stack data structures
 - Graph traversal
 - Procedural generation
-- OpenGL rendering
+- Pygame rendering
 - Maze theory
 
 ---
